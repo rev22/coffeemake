@@ -6,13 +6,13 @@ Command usage and functionality are similar to 'make':
 coffee Makefile.coffee [TARGET]
 ```
 
-But also supports 'watch' feature of more modern and generatings files when their sources change:
+but also supports the 'watch' feature of more modern build tools, for rebuilding files when their sources change:
 
 ```sh
 coffee Makefile.coffee --watch [TARGET]
 ```
 
-Installation:
+## Installation:
 
 First copy `coffeemakefile.coffee` to your buildtree for example under `scripts/`.
 
@@ -31,7 +31,7 @@ require('./makefile-coffee').run ->
 This may look familiar to you if you both know 'make' and 'Coffeescript'.
 
 
-Authors and licensing:
+## Authors and licensing
 
 Copyright (c) 2014 Michele Bini
 
