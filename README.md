@@ -27,7 +27,7 @@ require('./coffeemakefile').run ->
 
 	# Define rule for generating .o files from .c files
 	@ '%.o', '%.c', ->
-		@sh @v.cc @in, '-o', @out
+		@sh @v.cc, @in, '-o', @out
 
 ```
 
