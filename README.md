@@ -12,20 +12,32 @@ but also supports the 'watch' feature of more modern build tools, for rebuilding
 coffee Makefile.coffee --watch [TARGET]
 ```
 
+In addition to running shell commands, it is possible to define build rules as javascript functions.
+
+
 ## Installation:
 
 First copy `coffeemakefile.coffee` to your buildtree for example under `scripts/`.
 
-Then create a Makefile.coffee, like this one. 
+Then create a `Makefile.coffee`, like this one. 
 
 ```coffee
 require('./coffeemakefile').run ->
 	@var 'cc' # Define cc as a variable
 
 	# Define rule for generating .o files from .c files
-	@ '%.o', '%.o', ->
+	@ '%.o', '%.c', ->
 		@sh @v.cc @in, '-o', @out
 
+```
+
+This would be equivalent to the following Makefile
+
+```make
+CC=cc
+
+%.o: %.c
+	sh $(CC) $< -o $@
 ```
 
 This may look familiar to you if you both know 'make' and 'Coffeescript'.
