@@ -31,6 +31,8 @@ require('./coffeemakefile').run ->
 
 ```
 
+This may look familiar to you if you both know 'make' and 'Coffeescript'.
+
 This would be equivalent to the following Makefile
 
 ```make
@@ -39,9 +41,6 @@ CC=cc
 %.o: %.c
 	sh $(CC) $< -o $@
 ```
-
-This may look familiar to you if you both know 'make' and 'Coffeescript'.
-
 
 ## Authors and licensing
 
