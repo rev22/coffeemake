@@ -23,6 +23,7 @@ Then create a `Makefile.coffee`, like this one.
 
 ```coffee
 require('./coffeemakefile').run ->
+
 	@var 'cc' # Define cc as a variable
 
 	# Define rule for generating .o files from .c files
