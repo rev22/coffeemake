@@ -39,7 +39,7 @@ This would be equivalent to the following Makefile
 CC=cc
 
 %.o: %.c
-	sh $(CC) $< -o $@
+	$(CC) $< -o $@
 ```
 
 ## Authors and licensing
