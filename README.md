@@ -14,9 +14,20 @@ coffeemake --watch TARGET
 
 Build rules are extracted from Makefiles.
 
+
+Makefiles with very simple traditional syntax are also supported, for example:
+
+```make
+CC=cc
+
+%.o: %.c
+	$(CC) $< -o $@
+```
+
+Only this very simple subset of the traditional syntax is currently supported.
 Complex Makefiles should be written using a Coffeescript syntax, that also allows you to define build rules as as javascript functions.
 
-This may look familiar to you if you are already acquainted with Coffeescript's syntax and 'make':
+The syntax should be intuitive and familiar to you if you are already acquainted with Coffeescript's syntax and 'make':
 
 ```coffee
 require('coffeemake').run ->
@@ -30,16 +41,11 @@ require('coffeemake').run ->
 
 ```
 
-Makefiles with very simple traditional syntax are also supported, for example:
+These Coffeescript-defined defined makefiles should be run stand-alone:
 
-```make
-CC=cc
-
-%.o: %.c
-	$(CC) $< -o $@
 ```
-
-Only this very simple subset of the traditional syntax is currently supported.
+coffee Makefile.coffee TARGET
+```
 
 
 ## Installation
