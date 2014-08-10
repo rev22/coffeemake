@@ -12,10 +12,7 @@ it also supports the 'watch' feature of more modern build tools, for rebuilding 
 coffeemake --watch TARGET
 ```
 
-Build rules are extracted from Makefiles.
-
-
-Makefiles with very simple traditional syntax are also supported, for example:
+Build rules are extracted from Makefiles.   Makefiles with very simple traditional syntax are supported, for example:
 
 ```make
 CC=cc
@@ -25,6 +22,8 @@ CC=cc
 ```
 
 Only this very simple subset of the traditional syntax is currently supported.
+
+
 Complex Makefiles should be written using a Coffeescript syntax, that also allows you to define build rules as as javascript functions.
 
 The syntax should be intuitive and familiar to you if you are already acquainted with Coffeescript's syntax and 'make':
@@ -46,7 +45,6 @@ These Coffeescript-defined defined makefiles should be run stand-alone:
 ```
 coffee Makefile.coffee TARGET
 ```
-
 
 ## Installation
 
