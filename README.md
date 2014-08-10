@@ -3,13 +3,13 @@ Simple build tool for Node.js, fully programmable via Coffeescript
 Command usage and functionality are similar to 'make':
 
 ```sh
-coffeemake [TARGET]
+coffeemake TARGET
 ```
 
 it also supports the 'watch' feature of more modern build tools, for rebuilding files when their sources change:
 
 ```sh
-coffeemake --watch [TARGET]
+coffeemake --watch TARGET
 ```
 
 Build rules are extracted from Makefiles.
@@ -57,7 +57,11 @@ Like `make`, `coffeemake` also accepts a `-f FILE` option, for specifying additi
 
 ## Known bugs and limitations
 
-The 'watch' feature only watches for changes in the current directory.  This will be fixed in a later version.
+The 'watch' feature only watches for changes in the current directory. 
+
+Command-line usage is not yet standardized or generally compatible with `make`.
+
+These may be fixed in later versions.
 
 
 ## Authors and licensing
