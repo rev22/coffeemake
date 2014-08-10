@@ -24,9 +24,9 @@ CC=cc
 Only this very simple subset of the traditional syntax is currently supported.
 
 
-Complex Makefiles should be written using a Coffeescript syntax, that also allows you to define build rules as as javascript functions.
+Complex Makefiles should be written using a Coffeescript syntax, also allowing you to define build rules as as javascript functions, in addition to shell commands.
 
-The syntax should be intuitive and familiar to you if you are already acquainted with Coffeescript's syntax and 'make':
+The syntax should be intuitive and familiar to you if you are already acquainted with Coffeescript and 'make':
 
 ```coffee
 require('coffeemake').run ->
@@ -40,7 +40,7 @@ require('coffeemake').run ->
 
 ```
 
-These Coffeescript-defined defined makefiles should be run stand-alone:
+These Coffeescript-defined makefiles should be run stand-alone:
 
 ```
 coffee Makefile.coffee TARGET
