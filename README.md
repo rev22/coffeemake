@@ -42,7 +42,7 @@ CC=cc
 Only this very simple subset of the traditional syntax is currently supported.
 
 
-## Installation:
+## Installation
 
 The easiest way to install is via npm, for example:
 
