@@ -1,0 +1,22 @@
+{
+  "name": "coffeemake",
+  "description": "Coffeescript-augmented make tool",
+  "keywords": ["make", "coffeescript", "build"],
+  "author": "Michele Bini",  
+  "version": "0.1.0",
+  "license": "MIT",
+  "bin": {
+    "coffeemake": "./bin/coffeemake"
+  },
+  "homepage": "http://github.com/rev22/coffeemake",
+  "bugs": "https://github.com/rev22/coffeemake/issues",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/rev22/coffeemake.git"
+  },
+  "dependencies": {
+    "execSync":  "*",
+    "touch": "*",
+    "coffee-script": ">=1.6"
+  }
+}

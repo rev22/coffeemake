@@ -1,40 +1,36 @@
-This is a simple programmable build tool with minimal dependencies, just Node.js and Coffeescript.
+Simple build tool for Node.js, fully programmable via Coffeescript
 
 Command usage and functionality are similar to 'make':
 
 ```sh
-coffee Makefile.coffee [TARGET]
+coffeemake [TARGET]
 ```
 
-but also supports the 'watch' feature of more modern build tools, for rebuilding files when their sources change:
+it also supports the 'watch' feature of more modern build tools, for rebuilding files when their sources change:
 
 ```sh
-coffee Makefile.coffee --watch [TARGET]
+coffeemake --watch [TARGET]
 ```
 
-In addition to running shell commands, it is possible to define build rules as javascript functions.
+Build rules are extracted from Makefiles.
 
+Complex Makefiles should be written using a Coffeescript syntax, that also allows you to define build rules as as javascript functions.
 
-## Installation:
-
-First copy `coffeemakefile.coffee` to your buildtree for example under `scripts/`.
-
-Then create a `Makefile.coffee`, like this one. 
+This may look familiar to you if you are already acquainted with Coffeescript's syntax and 'make':
 
 ```coffee
-require('./coffeemakefile').run ->
+require('coffeemake').run ->
 
 	@var 'cc' # Define cc as a variable
 
 	# Define rule for generating .o files from .c files
 	@ '%.o', '%.c', ->
 		@sh @v.cc, @in, '-o', @out
+		# You can add any code for the build rule here
 
 ```
 
-This may look familiar to you if you both know 'make' and 'Coffeescript'.
-
-This would be equivalent to the following Makefile
+Makefiles with very simple traditional syntax are also supported, for example:
 
 ```make
 CC=cc
@@ -43,8 +39,29 @@ CC=cc
 	$(CC) $< -o $@
 ```
 
+Only this very simple subset of the traditional syntax is currently supported.
+
+
+## Installation:
+
+The easiest way to install is via npm, for example:
+
+```sh
+npm install coffeemake
+```
+
+## Options
+
+Like `make`, `coffeemake` also accepts a `-f FILE` option, for specifying additional Makefiles, in the traditional format, not Coffeescript.
+
+
+## Known bugs and limitations
+
+The 'watch' feature only watches for changes in the current directory.  This will be fixed in a later version.
+
+
 ## Authors and licensing
 
 Copyright (c) 2014 Michele Bini
 
-MIT license.
+MIT license

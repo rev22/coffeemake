@@ -2,7 +2,7 @@
 #
 # This program is available under the terms of the MIT License
   
-module.exports = ((x)-> x.clone().standalone())
+module.exports = ((x)-> x.clone())
   version: "makefile-coffee 0.3.0"
 
   RegExp: RegExp
@@ -102,7 +102,8 @@ module.exports = ((x)-> x.clone().standalone())
     @
 
   setupMakefile: (f)->
-    if @fs.fileExists f
+    # Setup a Makefile with traditional syntax.  Only a subset of the syntax is currently supported.
+    if @fs.existsSync f
       try
         c = @fs.readFileSync(f)
         unless (c = c.toString())?
@@ -113,49 +114,51 @@ module.exports = ((x)-> x.clone().standalone())
       add = (heading, rule)=>
         rule = do (rule)->
           compile = (x)->
-            x = rule.split(/[$][(][^)]*[)]/)
+            return (->) if x is ""
+            x = x.split(/([$][(][^)]*[)])/)
             y = [ ]
-            y = y.concat z.split(/[$]./) for z in x
+            y = y.concat z.split(/([$][^(])/) for z in x
             ->
               x = for z in y
-                if (match = /[$][(]([^)]*)[)]/.exec x)?
+                if (match = /^[$][(]([^)]*)[)$]/.exec z)?
                   n = match[1]
                   @v[n]
-                else if (match = /[$](.)/.exec x)?
+                else if (match = /^[$](.)$/.exec z)?
                   b = match[1]
                   if b is "@"
-                    return @out
+                    @out
                   else if b is "^"
-                    return @deps.join ' '
+                    @deps.join ' '
                   else if b is "<"
-                    return @in
+                    @in
                   else
                     @error "Unknown variable identifier in #{f}: '$#{b}'"
                 else
-                  x
+                  z
               cmd = x.join('')
               @show cmd
-              @execSync.run cmd
+              @execSync.run cmd unless @testRun
           rule = (compile x for x in rule)
           ->
             x.call @ for x in rule
-        args = [ heading[0] ]
-        rx = /\ */
-        args = args.concat(heading[1].trim().split(rx))
-        args.psuh rule
+        args = [ heading[1] ]
+        args = args.concat(heading[2].trim().split(/\ +/))
+        args.push rule
         @.apply @, args
       heading = null
       rule = [ ]
       for line in c.split "\n"
         lineno++
         line = line.trim()
-        if (match = /^[^ ]*:.*$/.exec line)?
+        if (match = /^([^\ ]+)=(.*)$/.exec line)?
+          @vars[match[1]] = match[2]
+        else if (match = /^([^\ ]*):(.*)$/.exec line)?
           if heading?
-            add match, rule
+            add heading, rule
             rule = [ ]
-          heading = lines
+          heading = match
         else
-          rule.push lines
+          rule.push line
       if heading?
         add heading, rule
     else
@@ -211,10 +214,10 @@ module.exports = ((x)-> x.clone().standalone())
     quiet: (args)-> @verboseness = -1
     delay: (args)-> @buildDelay = args.shift()
     test: (args)-> @testRun = true
-    f: (f)->
+    f: (args)->
       if @defaultMakefile?
         @defaultMakefile = null?
-      (@makefiles ?= [ ]).push f
+      (@makefiles ?= [ ]).push args.shift()
 
   processOption: (name, args)->
     if (x = @options[name])?
@@ -271,14 +274,14 @@ module.exports = ((x)-> x.clone().standalone())
   lib:
     constants: require ("constants")
 
-  touchFile: (file)->
-    # @touch.sync(file) unless @testRun
-    try
-      fd = @fs.openSync(f, @lib.constants.O_RDWR)
-    catch e
-      @fs.closeSync()
-      throw e
-    @fs.closeSync(fd)
+  touchFile: (f)->
+    return if @testRun
+    @touch.sync(f)
+    # try
+    #   fd = @fs.openSync(f, @lib.constants.O_RDWR)
+    # catch e
+    #   throw e
+    # @fs.closeSync(fd)
 
   tryBuild: (target, deps, task, soft)->
       @debug "Try to build #{target}"
@@ -302,7 +305,7 @@ module.exports = ((x)-> x.clone().standalone())
           unless fileDidExistBefore
             try
               @fs.unlinkSync(target)
-            catch error
+            catch error2
               true
           throw error
 
@@ -330,8 +333,9 @@ module.exports = ((x)-> x.clone().standalone())
           @debug "Rule #{r.target} <- #{r.deps[0] ? "''"} matches! DONE"
 
   performAction: ->
+    @v = @vars
     if !@makefiles? and @defaultMakefile?
-      @makefiles = @defaultMakefile
+      @makefiles = [ @defaultMakefile ]
     if @makefiles?
       @setupMakefile x for x in @makefiles
     unless @toMake?
@@ -364,21 +368,26 @@ module.exports = ((x)-> x.clone().standalone())
     args = if /([/]|^)coffee([.]exe)?$/i.test argv[0] then argv.slice(1) else argv.slice(0)
     progname = args.shift()
     cb.call @, args, { progname }
+    @
 
   runWithArgs: (args, setup)->      
-      @v = @vars
-      @processOptions(args).setup(setup).performAction()
+    @processOptions(args).setup(setup).performAction()
 
   run: (setup)->
-    withProcessArgs (args)->
+    @withProcessArgs (args)->
       @runWithArgs(args, setup)
 
-  standalone: ->
-    # Run stand-alone, if the process was started on this file only
+  runWithArgs: (args)->
     @defaultMakefile = 'Makefile'
-    withProcessArgs (args)->
-      if (c = args.shift())? and (/([/]|^)coffeemakefile([.].*)?$/).test(c)
-        @processOptions(args).setup(setup).performAction()
-    @
-        
+    @processOptions(args).performAction()
 
+  runStandalone: ({ process })->
+    @process = process if process?
+    @withProcessArgs @runWithArgs
+
+  runIfStandalone: ->
+    # Run stand-alone, if the process was started on this file only
+    @withProcessArgs (args, { progname })->
+      if (/([/]|^)coffeemake([.].*)?$/).test(progname)
+        @runWithArgs args
+    @
