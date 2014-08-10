@@ -2,7 +2,7 @@
 #
 # This program is available under the terms of the MIT License
   
-module.exports = ((x)-> x.clone())
+module.exports = ((x)-> x.clone().standalone())
   version: "makefile-coffee 0.3.0"
 
   RegExp: RegExp
@@ -101,6 +101,66 @@ module.exports = ((x)-> x.clone())
     setup.apply @
     @
 
+  setupMakefile: (f)->
+    if @fs.fileExists f
+      try
+        c = @fs.readFileSync(f)
+        unless (c = c.toString())?
+          throw "Could not decode file"
+      catch error
+        @error "Could not read #{f}: #{error}"
+      lineno = 0
+      add = (heading, rule)=>
+        rule = do (rule)->
+          compile = (x)->
+            x = rule.split(/[$][(][^)]*[)]/)
+            y = [ ]
+            y = y.concat z.split(/[$]./) for z in x
+            ->
+              x = for z in y
+                if (match = /[$][(]([^)]*)[)]/.exec x)?
+                  n = match[1]
+                  @v[n]
+                else if (match = /[$](.)/.exec x)?
+                  b = match[1]
+                  if b is "@"
+                    return @out
+                  else if b is "^"
+                    return @deps.join ' '
+                  else if b is "<"
+                    return @in
+                  else
+                    @error "Unknown variable identifier in #{f}: '$#{b}'"
+                else
+                  x
+              cmd = x.join('')
+              @show cmd
+              @execSync.run cmd
+          rule = (compile x for x in rule)
+          ->
+            x.call @ for x in rule
+        args = [ heading[0] ]
+        rx = /\ */
+        args = args.concat(heading[1].trim().split(rx))
+        args.psuh rule
+        @.apply @, args
+      heading = null
+      rule = [ ]
+      for line in c.split "\n"
+        lineno++
+        line = line.trim()
+        if (match = /^[^ ]*:.*$/.exec line)?
+          if heading?
+            add match, rule
+            rule = [ ]
+          heading = lines
+        else
+          rule.push lines
+      if heading?
+        add heading, rule
+    else
+      @error "File #{f} does not exist!"
+
   error: (msg)->
     @echo msg
     @process.exit(1)
@@ -137,7 +197,7 @@ module.exports = ((x)-> x.clone())
         if @depsRequired[dep]?
           @info "Ignored circular or duplicate dependency: #{dep}"
         else
-          
+          true
     @
 
   make: (target)->
@@ -151,6 +211,10 @@ module.exports = ((x)-> x.clone())
     quiet: (args)-> @verboseness = -1
     delay: (args)-> @buildDelay = args.shift()
     test: (args)-> @testRun = true
+    f: (f)->
+      if @defaultMakefile?
+        @defaultMakefile = null?
+      (@makefiles ?= [ ]).push f
 
   processOption: (name, args)->
     if (x = @options[name])?
@@ -204,8 +268,17 @@ module.exports = ((x)-> x.clone())
     @trace "newer"
     true
 
+  lib:
+    constants: require ("constants")
+
   touchFile: (file)->
-    @touch.sync(file) unless @testRun
+    # @touch.sync(file) unless @testRun
+    try
+      fd = @fs.openSync(f, @lib.constants.O_RDWR)
+    catch e
+      @fs.closeSync()
+      throw e
+    @fs.closeSync(fd)
 
   tryBuild: (target, deps, task, soft)->
       @debug "Try to build #{target}"
@@ -257,6 +330,10 @@ module.exports = ((x)-> x.clone())
           @debug "Rule #{r.target} <- #{r.deps[0] ? "''"} matches! DONE"
 
   performAction: ->
+    if !@makefiles? and @defaultMakefile?
+      @makefiles = @defaultMakefile
+    if @makefiles?
+      @setupMakefile x for x in @makefiles
     unless @toMake?
       lastTarget = null
       lastTarget = k for k,v of @targets
@@ -264,12 +341,14 @@ module.exports = ((x)-> x.clone())
       @make lastTarget
     @[@action].apply @
 
-  processArgs: (args)->
+  processOptions: (args)->
     while args.length
         x = args.shift()
         if (m = /^--(.*)$/.exec(x))?
           if m[1] is ''
             break
+          @processOption m[1], args
+        else if (m = /^-(.)$/.exec(x))?
           @processOption m[1], args
         else
           @make x
@@ -278,13 +357,28 @@ module.exports = ((x)-> x.clone())
         @make x
     @
 
-  run: (setup)->
+  withProcessArgs: (cb)->
     { process } = @
-    [ progname, args ] = do->
-      # Extract correct argument list
-      { argv } = process
-      args = if /([/]|^)coffee([.]exe)?$/i.test argv[0] then argv.slice(1) else argv.slice(0)
-      progname = args.shift()
-      [ progname, args ]
-    @v = @vars
-    @processArgs(args).setup(setup).performAction()
+    # Extract correct argument list
+    { argv } = process
+    args = if /([/]|^)coffee([.]exe)?$/i.test argv[0] then argv.slice(1) else argv.slice(0)
+    progname = args.shift()
+    cb.call @, args, { progname }
+
+  runWithArgs: (args, setup)->      
+      @v = @vars
+      @processOptions(args).setup(setup).performAction()
+
+  run: (setup)->
+    withProcessArgs (args)->
+      @runWithArgs(args, setup)
+
+  standalone: ->
+    # Run stand-alone, if the process was started on this file only
+    @defaultMakefile = 'Makefile'
+    withProcessArgs (args)->
+      if (c = args.shift())? and (/([/]|^)coffeemakefile([.].*)?$/).test(c)
+        @processOptions(args).setup(setup).performAction()
+    @
+        
+
