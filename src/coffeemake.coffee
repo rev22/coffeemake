@@ -365,7 +365,7 @@ module.exports = ((x)-> x.clone())
     { process } = @
     # Extract correct argument list
     { argv } = process
-    args = if /([/]|^)coffee([.]exe)?$/i.test argv[0] then argv.slice(1) else argv.slice(0)
+    args = if /([/]|^)(node(js)?|coffee)([.]exe)?$/i.test argv[0] then argv.slice(1) else argv.slice(0)
     progname = args.shift()
     cb.call @, args, { progname }
     @
@@ -378,16 +378,10 @@ module.exports = ((x)-> x.clone())
       @runWithArgs(args, setup)
 
   runWithArgs: (args)->
-    @defaultMakefile = 'Makefile'
     @processOptions(args).performAction()
 
   runStandalone: ({ process })->
+    @defaultMakefile = 'Makefile'
     @process = process if process?
-    @withProcessArgs @runWithArgs
-
-  runIfStandalone: ->
-    # Run stand-alone, if the process was started on this file only
-    @withProcessArgs (args, { progname })->
-      if (/([/]|^)coffeemake([.].*)?$/).test(progname)
-        @runWithArgs args
-    @
+    @withProcessArgs (args)->
+      @runWithArgs args
