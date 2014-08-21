@@ -97,9 +97,7 @@ module.exports = ((x)-> x.clone())
     @process.stdout.write args.join(' ') + "\n"
     @
 
-  setup: (setup)->
-    setup.apply @
-    @
+  setup: (s)-> s?.apply @; @
 
   setupMakefile: (f)->
     # Setup a Makefile with traditional syntax.  Only a subset of the syntax is currently supported.
@@ -370,15 +368,12 @@ module.exports = ((x)-> x.clone())
     cb.call @, args, { progname }
     @
 
-  runWithArgs: (args, setup)->      
-    @processOptions(args).setup(setup).performAction()
-
   run: (setup)->
     @withProcessArgs (args)->
       @runWithArgs(args, setup)
 
-  runWithArgs: (args)->
-    @processOptions(args).performAction()
+  runWithArgs: (args, setup)->
+    @processOptions(args).setup(setup).performAction()
 
   runStandalone: ({ process })->
     @defaultMakefile = 'Makefile'
