@@ -331,7 +331,6 @@ module.exports = ((x)-> x.clone())
           @debug "Rule #{r.target} <- #{r.deps[0] ? "''"} matches! DONE"
 
   performAction: ->
-    @v = @vars
     if !@makefiles? and @defaultMakefile?
       @makefiles = [ @defaultMakefile ]
     if @makefiles?
@@ -373,6 +372,7 @@ module.exports = ((x)-> x.clone())
       @runWithArgs(args, setup)
 
   runWithArgs: (args, setup)->
+    @v = @vars
     @processOptions(args).setup(setup).performAction()
 
   runStandalone: ({ process })->
