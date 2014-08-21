@@ -2,6 +2,7 @@
   "name": "coffeemake",
   "description": "Coffeescript-augmented make tool",
   "keywords": ["make", "coffeescript", "build"],
+  "main": "lib/coffeemake",
   "author": "Michele Bini",  
   "version": "0.1.1",
   "license": "MIT",
