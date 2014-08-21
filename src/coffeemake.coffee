@@ -207,6 +207,16 @@ module.exports = ((x)-> x.clone())
   verboseness: 0
 
   options:
+    help: (args)->
+      console.log """
+        Options:
+        --watch    Rebuild the current directory for changes
+        --test     Test run: print shell commands instead of executing them
+        --quiet    Do not show messages
+        --verbose  Increase verboseness
+        --help     Show this help
+        """
+      @process.exit()
     watch: (args)-> @action = 'watchAction'
     verbose: (args)-> @verboseness++
     quiet: (args)-> @verboseness = -1
