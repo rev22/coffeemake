@@ -162,7 +162,7 @@ module.exports = ((x)-> x.clone())
       if heading?
         add heading, rule
     else
-      @error "File #{f} does not exist!"
+      @error "File '#{f}' does not exist!"
 
   error: (msg)->
     @echo msg
