@@ -136,8 +136,9 @@ module.exports = ((x)-> x.clone())
                   z
               cmd = x.join('')
               @show cmd
-              retCode = @execSync.run cmd unless @testRun
-              throw "Shell command failed: #{cmd}" unless retCode is 0
+              unless @testRun
+                retCode = @execSync.run cmd
+                throw "Shell command failed: #{cmd}" unless retCode is 0
           rule = (compile x for x in rule)
           ->
             x.call @ for x in rule
