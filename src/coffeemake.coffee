@@ -75,7 +75,8 @@ module.exports = ((x)-> x.clone())
     if opt.in
       cmd = cmd + ' <' + opt["in"]
     @show cmd
-    @execSync.run cmd unless @testRun
+    retCode = @execSync.run cmd unless @testRun
+    throw "Shell command failed: #{cmd}" unless retCode is 0
 
   vars: [ ]
   rules: [ ]
@@ -135,7 +136,8 @@ module.exports = ((x)-> x.clone())
                   z
               cmd = x.join('')
               @show cmd
-              @execSync.run cmd unless @testRun
+              retCode = @execSync.run cmd unless @testRun
+              throw "Shell command failed: #{cmd}" unless retCode is 0
           rule = (compile x for x in rule)
           ->
             x.call @ for x in rule
