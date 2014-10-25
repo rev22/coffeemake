@@ -46,6 +46,7 @@ These Coffeescript-defined makefiles should be run stand-alone:
 coffee Makefile.coffee TARGET
 ```
 
+
 ## Installation
 
 The easiest way to install is via npm, for example:
@@ -54,9 +55,20 @@ The easiest way to install is via npm, for example:
 npm install coffeemake
 ```
 
-## Options
 
-Like `make`, `coffeemake` also accepts a `-f FILE` option, for specifying additional Makefiles, in the traditional format, not Coffeescript.
+## Command-line options
+
+```
+  -f FILE    Read FILE as Makefile
+  --watch    Rebuild the current directory for changes
+  --test     Test run: print shell commands instead of executing them
+  --rebuild  Rebuild targets ignoring modification times
+  --quiet    Do not show messages
+  --verbose  Increase verboseness
+  --help     Show this help
+```
+
+Like `make`, `coffeemake` also accepts a `-f FILE` option, for specifying additional Makefiles in the traditional Makefile format
 
 
 ## Known bugs and limitations

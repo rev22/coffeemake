@@ -213,6 +213,7 @@ module.exports = ((x)-> x.clone())
     help: (args)->
       console.log """
         Options:
+        -f FILE    Read FILE as Makefile
         --watch    Rebuild the current directory for changes
         --test     Test run: print shell commands instead of executing them
         --rebuild  Rebuild targets ignoring modification times
