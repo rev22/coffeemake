@@ -215,11 +215,13 @@ module.exports = ((x)-> x.clone())
         Options:
         --watch    Rebuild the current directory for changes
         --test     Test run: print shell commands instead of executing them
+        --rebuild  Rebuild targets ignoring modification times
         --quiet    Do not show messages
         --verbose  Increase verboseness
         --help     Show this help
         """
       @process.exit()
+    rebuild: (args)-> @ignoreMtime = true
     watch: (args)-> @action = 'watchAction'
     verbose: (args)-> @verboseness++
     quiet: (args)-> @verboseness = -1
@@ -274,6 +276,7 @@ module.exports = ((x)-> x.clone())
     s.mtime
 
   isTargetNewer: (target, deps)->
+    return true if @ignoreMtime
     return false unless (t = @fileTime target)?
     @debug "deps: " + target
     for d in deps
@@ -298,6 +301,7 @@ module.exports = ((x)-> x.clone())
       @debug "Try to build #{target}"
       @debug "Complain if some dependencies are missing."
       for xx in deps
+        continue if xx is ""
         unless @depExists(xx)
           (if soft then @trace else @error).call @, "A required dependency is missing: #{xx}"
           return
