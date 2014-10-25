@@ -277,7 +277,7 @@ module.exports = ((x)-> x.clone())
     s.mtime
 
   isTargetNewer: (target, deps)->
-    return true if @ignoreMtime
+    return false if @ignoreMtime
     return false unless (t = @fileTime target)?
     @debug "deps: " + target
     for d in deps
