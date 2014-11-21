@@ -60,7 +60,7 @@ npm install coffeemake
 
 ```
   -f FILE    Read FILE as Makefile
-  --watch    Rebuild the current directory for changes
+  --watch    Rebuild targets when the current directory for changes
   --test     Test run: print shell commands instead of executing them
   --rebuild  Rebuild targets ignoring modification times
   --quiet    Do not show messages
