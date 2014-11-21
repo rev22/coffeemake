@@ -100,7 +100,7 @@ module.exports = ((x)-> x.clone())
 
   setup: (s)-> s?.apply @; @
 
-  setupMakefile: (f)->
+  loadMakefile: (f)->
     # Setup a Makefile with traditional syntax.  Only a subset of the syntax is currently supported.
     if @fs.existsSync f
       try
@@ -164,6 +164,7 @@ module.exports = ((x)-> x.clone())
         add heading, rule
     else
       @error "File '#{f}' does not exist!"
+    @
 
   error: (msg)->
     @echo msg
@@ -352,7 +353,7 @@ module.exports = ((x)-> x.clone())
     if !@makefiles? and @defaultMakefile?
       @makefiles = [ @defaultMakefile ]
     if @makefiles?
-      @setupMakefile x for x in @makefiles
+      @loadMakefile x for x in @makefiles
     unless @toMake?
       lastTarget = null
       lastTarget = k for k,v of @targets
