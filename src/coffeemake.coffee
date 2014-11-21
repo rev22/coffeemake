@@ -151,7 +151,8 @@ module.exports = ((x)-> x.clone())
               if n? and (n = n.trim()).length
                 for zz in n.split(/\ +/)
                   y.push zz
-            y.push z
+            else
+              y.push z
           y
         args = [ heading[1] ]
         args = args.concat(expandVars(heading[2].trim().split(/\ +/)))
