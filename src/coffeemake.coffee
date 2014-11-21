@@ -142,7 +142,7 @@ module.exports = ((x)-> x.clone())
           rule = (compile x for x in rule)
           ->
             x.call @ for x in rule
-        expandVars = (x)->
+        expandVars = (x)=>
           y = [ ]
           for z in x
             if (match = /^[$][(]([^)]*)[)]$/.exec z)?
