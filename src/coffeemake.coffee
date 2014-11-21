@@ -100,7 +100,7 @@ module.exports = ((x)-> x.clone())
 
   setup: (s)-> s?.apply @; @
 
-  loadMakefile: (f)->
+  loadMakefile: (f = 'Makefile')->
     # Setup a Makefile with traditional syntax.  Only a subset of the syntax is currently supported.
     if @fs.existsSync f
       try
