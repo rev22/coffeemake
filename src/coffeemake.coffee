@@ -119,7 +119,7 @@ module.exports = ((x)-> x.clone())
             y = y.concat z.split(/([$][^(])/) for z in x
             ->
               x = for z in y
-                if (match = /^[$][(]([^)]*)[)$]/.exec z)?
+                if (match = /^[$][(]([^)]*)[)]$/.exec z)?
                   n = match[1]
                   @v[n]
                 else if (match = /^[$](.)$/.exec z)?
