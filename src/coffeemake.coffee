@@ -142,8 +142,19 @@ module.exports = ((x)-> x.clone())
           rule = (compile x for x in rule)
           ->
             x.call @ for x in rule
+        expandVars = (x)->
+          y = [ ]
+          for z in x
+            if (match = /^[$][(]([^)]*)[)]$/.exec z)?
+              n = match[1]
+              n = @v[n]
+              if n? and (n = n.trim()).length
+                for zz in n.split(/\ +/)
+                  y.push zz
+            y.push z
+          y
         args = [ heading[1] ]
-        args = args.concat(heading[2].trim().split(/\ +/))
+        args = args.concat(expandVars(heading[2].trim().split(/\ +/)))
         args.push rule
         @.apply @, args
       heading = null
