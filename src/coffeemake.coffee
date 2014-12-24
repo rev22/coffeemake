@@ -3,7 +3,7 @@
 # This program is available under the terms of the MIT License
   
 module.exports = ((x)-> x.clone())
-  version: "makefile-coffee 0.3.0"
+  version: "makefile-coffee 0.3.4"
 
   RegExp: RegExp
   fs: require 'fs'
@@ -368,10 +368,12 @@ module.exports = ((x)-> x.clone())
     if @makefiles?
       @loadMakefile x for x in @makefiles
     unless @toMake?
-      lastTarget = null
-      lastTarget = k for k,v of @targets
-      @error "No targets defined!" unless lastTarget?
-      @make lastTarget
+      firstTarget = null
+      for k,v of @targets
+        firstTarget = k
+        break
+      @error "No targets defined!" unless firstTarget?
+      @make firstTarget
     @[@action].apply @
 
   processOptions: (args)->
