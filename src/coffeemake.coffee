@@ -3,7 +3,7 @@
 # This program is available under the terms of the MIT License
   
 module.exports = ((x)-> x.clone())
-  version: "makefile-coffee 0.3.5"
+  version: "makefile-coffee 0.3.6"
 
   RegExp: RegExp
   fs: require 'fs'
@@ -156,7 +156,7 @@ module.exports = ((x)-> x.clone())
               y.push z
           y
         args = [ heading[1] ]
-        args = args.concat(expandVars(heading[2].trim().split(/\ +/))) if /^ *$/.test(heading[2])
+        args = args.concat(expandVars(heading[2].trim().split(/\ +/))) unless /^ *$/.test(heading[2])
         args.push rule
         @.apply @, args
       heading = null
